@@ -12,18 +12,10 @@ export const fetchPostsAndUsers =()=> async (dispatch, getState) =>{
   //el resultado de llamarla a nuestra funcion de dispach
   await dispatch(fetchPosts()); //para asegurarnos que esperamos a que sea completada
 
-  // //tenemos que recorrerla y buscar el usuario para cada funciona usamos _.map
-  // //una version que recuerda y queremos solo la propuedad de id de las publicacionesy encontrar solo las id UNICAS
-  // const userIds = _.uniq(_.map(getState().posts, 'userId')); //retorna un array con solo las id unicas de los usuarios
-  // userIds.forEach(id=> dispatch (fetchUser(id))); //no hace falta await porq no vamos a hacer nada mas
-
-
-  //encadena funciones y los resultados es necesario terminar con value
-  _.chain(getState().posts)
-    .map('userId')
-    .uniq()
-    .forEach(id=>dispatch(fetchUser(id)))
-    .value()
+  //tenemos que recorrerla y buscar el usuario para cada funciona usamos _.map
+  //una version que recuerda y queremos solo la propuedad de id de las publicacionesy encontrar solo las id UNICAS
+  const userIds = _.uniq(_.map(getState().posts, 'userId')); //retorna un array con solo las id unicas de los usuarios
+  userIds.forEach(id=> dispatch (fetchUser(id))); //no hace falta await porq no vamos a hacer nada mas 
 };
 
 export const fetchPosts = () => async dispatch => {
