@@ -1,0 +1,30 @@
+import React from 'react';
+/*
+solo se crea el connect aqui porque solo la lista de canciones necesita crear esta conexion
+*/
+import {connect} from 'react-redux';
+class SongList extends React.Component{
+  render(){
+    console.log(this.props);
+    return <div>SongList</div>;
+  }
+}
+
+/* vamos a configurar connect con MapStateToProps le diremos que queremos obtener una lista de canciones de nuestra tienda al
+provider y en caucalquien momento en q la lista o parte de la tienda se modifique este se lo notifica al connect y esta nos pasará la
+lista al componennte de lista de canciones
+vamos a decirle que queremos obtener datos especificos del almacen de redux*/
+/*vamos a coger el objeto estado y todos los datos que están dentro de store y vamos a realizar un calculo
+que hara que se muestren como accesorios props dentro del componente puede llamarse como quieras esta se llama con todo el store
+state son todo slos datos dentro de la store de redux*/
+const mapStateToProps =(state)=>{
+  // console.log(state);
+  // return state;
+  return {songs:state.songs};
+}
+
+export default connect(mapStateToProps)(SongList);
+/*la sintaxis de la funcion: para una funcion que devuelve una funcion y el segundo () invoca a la funcion que se devolvio*/
+
+/* flujo: se llama connect este ejecuta la funcion map y cuando termina llama a ejecutar songList y en esta ya estara en this.props
+el resultado de maps osea la lista de canciones */
