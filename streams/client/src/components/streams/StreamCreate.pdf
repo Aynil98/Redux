@@ -1,0 +1,110 @@
+// import React from 'react';
+//
+// const StreamCreate = ()=> {
+//   return(
+//     <div>StreamCreate</div>
+//   );
+// };
+//
+// export default StreamCreate;
+//CAMBIOS PARA PONER REDUX FORM Y CLASS
+/*field es cualquiercosa que solicite una entrada al usuario
+sale un error porq el field no sabe como mostrar texto por ello se le pasa tambien un component
+que retorna lo que se ve en la pantalla
+otra forma de hacerlo
+renderInput(formProps){
+  // console.log(formProps);
+  return(
+    <input
+      onChange={formProps.input.onChange}
+      value={formProps.input.value}
+    />
+
+        <input {...formProps.input}  /> agrega todos los valores como propideadaes al elemetno de entrada
+        y cambiar formProps por {input}
+  );
+
+  */
+import React from 'react';
+import {Field, reduxForm} from 'redux-form';
+import {connect} from 'react-redux'; //para conectar con la api
+import {createStream} from '../../actions';
+
+class StreamCreate extends React.Component {
+  renderError({error, touched}){
+    if (touched && error){
+      return(
+        <div className = "ui error message">
+          <div className="header">{error}</div>
+        </div>
+      );
+    }
+  }
+
+  renderInput = ({input, label, meta})=>{
+    // console.log(formProps);
+    // console.log(meta);
+    const className=`field ${meta.error && meta.touched ? 'error': ''}`;
+    return(
+      <div className={className}>
+        <label>{label}</label>
+        <input {...input} autoComplete="off"  />
+        {this.renderError(meta)}
+      </div>
+    );
+  }
+
+  //hara request a la api
+  // console.log(formValues); //los valores que has introducido
+  //queremos validar las entradas
+  onSubmit = formValues =>{
+    this.props.createStream(formValues);
+  };
+
+  render (){
+    // console.log(this.props);
+    return (
+      <form onSubmit={this.props.handleSubmit(this.onSubmit)} className ="ui form error">
+        <Field
+          name ="title"
+          component ={this.renderInput}
+          label="Enter Title"
+        />
+        <Field
+          name ="description"
+          component ={this.renderInput}
+          label="Enter Description"
+        />
+        <button className="ui button primary">Submit</button>
+      </form>
+    );
+  }
+}
+
+const validate  = (formValues) =>{
+  const errors ={};
+
+  if (!formValues.title) {
+    errors.title = 'You must enter a title';
+  }
+
+  if (!formValues.description) {
+    errors.description = 'You must enter a description';
+  }
+
+  return errors;
+
+}
+
+// /*recube un objeto con form y su nombre*/
+// export default reduxForm({
+//   form: 'StreamCreate',
+//   validate
+// })(StreamCreate);
+//PARA UNIR CONNECT CON reduxForm
+const formWrapped = reduxForm({
+  form: 'StreamCreate',
+  validate
+})(StreamCreate);
+
+export default  connect(null,{createStream})(formWrapped);

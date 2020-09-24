@@ -1,0 +1,66 @@
+import React from 'react';
+
+class GoogleAuth extends React.Component {
+  state = { isSignedIn: null}; //no sabemos si el usuario esta o no iniciado
+  //solo se quiere llamar una vez en cualquier momento en el que nuestro componente se muestre, se intenta cargar
+  //esa parte del cliente de la biblioteca, esto lleva un tiempo, ponemos una funcion que solo se inciia cuando termine
+  //scope es a lo que queremos acceder
+  /*queremos poner algo que nos diga que se hizo ya la llamada al client por ello ponemos .then(()=)
+  el init devuelve una promesa en este them se ejecitara despues de que la biblioteca este lista veremos si el usuario
+  ha iniciado sesion y lo imprimiremos (this.auth es el usuario que inicio)*/
+  componentDidMount (){
+    window.gapi.load('client:auth2', () =>{
+      window.gapi.client.init({
+        clientId: '797401886567-9cumct9mrt3v2va409rasa7fa6fq02hh.apps.googleusercontent.com',
+        scope: 'email'
+      }).then (()=>{
+        this.auth = window.gapi.auth2.getAuthInstance();
+        this.setState({ isSignedIn: this.auth.isSignedIn.get() }) //actualizamos el estado
+        // this.onAuthChange(); //llama a lo mismo
+        this.auth.isSignedIn.listen(this.onAuthChange);
+      });
+    });
+  }
+  //para que se actualice el texto cuando se cambia, sin refrescar despuesd del setState
+  onAuthChange=()=>{
+    //se llamará cada vez que el usuario se log in o log onAuthChange
+    this.setState({isSignedIn: this.auth.isSignedIn.get()})
+  };
+
+  //hacemos event handeler para cada boton
+  onSignIn = () =>{
+    this.auth.signIn();
+  };
+
+  onSignOut = () =>{
+    this.auth.signOut();
+  };
+
+  renderAuthButton(){
+    if (this.state.isSignedIn===null) {
+      return null;
+    } else if (this.state.isSignedIn){
+      return(
+        <button onClick={this.onSignOut} className="ui red google button">
+          <i className="google icon" />
+          Sing Out
+        </button>
+      );
+    }else {
+      return(
+        <button  onClick={this.onSignIn} className="ui green google button">
+          <i className="google icon" />
+          Sing In With Google
+        </button>
+      );
+    }
+  }
+
+  render(){
+    return(
+      <div>{this.renderAuthButton()}</div>
+    );
+  }
+}
+
+export default GoogleAuth;
