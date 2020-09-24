@@ -1,0 +1,7 @@
+Redux:
+mucha documentacion con muy buebos disellos patterns
+y mucgas kibrerias
+
+context:
+no need extra lib
+hard to buid a store componnet with cross cutting concerns
