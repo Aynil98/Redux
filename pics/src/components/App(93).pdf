@@ -1,0 +1,44 @@
+import React from 'react';
+import axios from 'axios';
+import SearchBar from './SearchBar';
+
+// const App = ()=> {
+//   return (
+//     <div className="ui container" style={{marginTop:'10px'}}>
+//       <SearchBar/>
+//     </div>
+//   );
+// };
+
+//aqui <SearchBar onSubmit={this.onSearchSubmit}/> puede llamarese de otra forma
+
+class App extends React.Component {
+  state = { images: [] }; // para acceder a ello hacemos un estado que sera una matriz vacia
+  //con sintaxis asincrona y cuando termine en response estará (otra forma)
+    onSearchSubmit = async (term) => {
+    //se lo pasamos a searchbar como una props
+    // hace una solicitud a API splash para realizar la busqueda
+    const response = await axios.get('https://api.unsplash.com/search/photos', {
+      params: { query: term },
+      headers:{
+        Authorization: 'Client-ID CDksDMqjoW-sP8zilUFwDT6exTG6RJOCF4qB9FUdUi0'
+      }
+    });
+
+    // .then((response) =>{ //buscamos algo que nos diga que la solicitud se ha completado la funcio then se llamará cuando temrine
+    //   console.log(response.data.results);  //accedemos a los resultados
+    // });
+    // console.log(response.data.results);
+    this.setState({ images: response.data.results});
+  }
+  render(){
+    return (
+      <div className="ui container" style={{marginTop:'10px'}}>
+        <SearchBar onSubmit={this.onSearchSubmit}/>
+        Found: {this.state.images.length} images
+      </div>
+    );
+  }
+}
+
+export default App;

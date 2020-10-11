@@ -1,0 +1,143 @@
+//lo queremos hacer reutilizable por ello le pasamos las opciones como props
+/*
+por ello tambien pasamos un useState de lo que se seleccioa y que cambie cada vez que se selecciona otra cosa
+para que no se muestre la opcion seleccionada hacemos un if y devolver null es que no se hace el render
+
+ahora vamos a hacer que el desplegable funcione como tal jugamos con el visible active, lo borramos lo manejamos
+con un estado
+
+queremos que cuando se pulse fuera se cierren las opciones:
+- alrrededor de los elementos del DOM el elemento debe de saber que has pulsado ahi
+event bubling, cuando un usuario hace click el navegador crea un objeto de evento que describe e informa sobre el clic
+y entrega el elemento al React este evento se pasa al padre y si este tiene un controlador del evento se ejecutará y viajará
+a todos los elemento que tiene por encima
+haremos un evento de escucha event listener y un click en cualquier elemnto navegara por todo el cuerpo con USEEFECT
+useEffect(()=>{
+  document.body.addEventListener('click', ()=>{
+    console.log('click');
+    setOpen(false);
+  });
+}, []);
+con esto hay un problema y es que no se cierra cuandi se pulsa a la opcion.
+para arreglarlo ponemos console.log en todos los onClick para saber cual es el orden de invocacion
+  body click
+  item click
+  droptdown click
+el event listener siempre es el primero en ejecutarse cuando se pulsa en el body se cambia a false y como
+tenemos uesto que se realice el del item con lo contrario no se cierra ninca
+
+para arreglarlo hay que entender que hay dos escenarios podemos imaginar que es lo que debe suceder despues de hacer onClick
+ en un elemento no quieres que pulsar en un sitio conllebe en cascada la ejecucion del resto. queremos cancelar el bubling de eventos
+ pero esto es peligroso por elllo vamos a poner un codigo para decidir siintentamos cerrar el desplegable o no en funcion del elemento  en el que se
+ hizo onClick:
+ - dentro no
+ - fuera si
+
+ useEffect(()=>{
+   document.body.addEventListener('click', (event)=>{
+     console.log(event.target);
+     setOpen(false);
+   });
+ }, []);
+
+ vamos a hacer uso de otro hoock useRef el cual nos permite obtener una referencia a un elemnto DOM DIRECTO
+ hacmeo suna ref al primer elemento creado por el dropdown ui form para saber si el click se hizo dentro o fuera de else {
+cemaos la ref y lo asignamos a uno de los elementos de dentri
+  <div ref = {ref} className="ui form">
+ }
+ if(ref.current.contains(event.target)){
+   return;
+ } ve si el elemento esta dentro o fuera del componente si si hace return y ya y si no lo pone a false
+
+ hemos hecho un boton para eliminar el dropdown pero sale un error porque cada vez que se borra la referencia se vuelve nula pero el listener
+ sigue escuchando.
+ en la APP :
+ export default () => {
+   const [selected, setSelected]=useState(options[0]);
+   //para mostrar o no el dropdown
+   const [showDropdown, setShowDropdown]= useState(true);
+
+   return (
+     <div>
+       <button onClick={()=>setShowDropdown(!showDropdown)}>Toggle Dropdown</button>
+       {showDropdown ?
+         <Dropdown
+           selected ={selected}
+           onSelectedChange={setSelected}
+           options = {options}
+         /> : null
+       }
+     </div>
+   );
+
+
+ useEffect(()=>{
+   document.body.addEventListener('click', (event)=>{
+     if(ref.current.contains(event.target)){
+       return;
+     }
+     setOpen(false);
+   });
+
+   return()=>{
+
+   };
+ }, []);
+
+ cleanup function
+*/
+import React, {useState, useEffect, useRef} from 'react';
+
+const Dropdown = ({options, selected, onSelectedChange, label}) => {
+  const[open, setOpen]= useState(false);
+  const ref = useRef();
+
+  useEffect(()=>{
+    const onBodyClick = (event)=>{
+      if(ref.current.contains(event.target)){
+        return;
+      }
+      setOpen(false);
+    };
+    document.body.addEventListener('click', onBodyClick);
+
+    return()=>{
+      document.body.removeEventListener('click', onBodyClick);
+    };
+  }, []);
+
+  const renderedOptions = options.map((option)=>{
+    if(option.value === selected.value){
+      return null;
+    }
+    return(
+      <div
+        key={option.value}
+        className="item"
+        onClick={()=> onSelectedChange(option)}
+      >
+        {option.label}
+      </div>
+    );
+  });
+
+  return (
+    <div ref = {ref} className="ui form">
+      <div className = "field">
+        <label className="label">{label}</label>
+        <div
+          onClick={()=> setOpen(!open)}
+          className={`ui selection dropdown ${open ? 'visible active': ''}`}
+        >
+          <i className="dropdown icon"></i>
+          <div className="text">{selected.label}</div>
+          <div className={`menu ${open ? 'visible transition' : ''}`}>
+            {renderedOptions}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Dropdown;

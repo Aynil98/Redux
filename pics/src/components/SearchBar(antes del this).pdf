@@ -1,0 +1,53 @@
+import React from 'react';
+
+//usamos clases porque vamos a necesitar manejar estados
+//para no llamar a la funcion siempre y solo cuando haya texto no se colocan () en this.onInputChange se pasa una referencia funcion de llamada no
+//on change es un nombre especial de propuedead de eventos como:
+//  onClick user clicks on something
+//  onChange user changes test in an onInputChange
+//             <input type ="text" onChange={this.onInputChange} />
+//  onSubmit user submits a form
+//para no poner la funcion   <input type ="text" onChange={(e)=>console.log(event.target.value)} />
+
+
+//bind crea una nueva funcion igual y la sobreescribe, hacer un contructor que defina la funcion y sobreescriba la existente
+
+//--vamos a pasar de un elemento no controlado a uno controlado
+
+class SearchBar extends React.Component {
+  //siempre tiene como argumento event //handeler event
+  //--
+  // onInputChange(event) {
+  //   //contiene el valor que haya introducido la persona.
+  //   //console.log(event.target.value);
+  // }
+
+  //-- cada vez que se cambie el texto se actualiza la variable de estado
+  state = {term:''};
+
+  onFormSubmit(event){
+// evita que el formulario se actualize y envie automáticamente
+    event.preventDefault();
+
+//da error porque: this es el valor unddefine porque no se llama con la clase (mirar la palabra que llama a esa funcion y ver que sea la clase quien llama a la funcion que usa this)
+    console.log(this.state.term);
+  }
+  render(){
+    return(
+      <div className = "ui segment">
+        <form onSubmit={this.onFormSubmit} className="ui form">
+          <div className="field">
+            <label>Image Search</label>
+            <input
+              type ="text"
+              value ={this.state.term}
+              onChange={(e)=> this.setState ({term: e.target.value})}
+             />
+          </div>
+        </form>
+      </div>
+    );
+  }
+}
+
+export default SearchBar;

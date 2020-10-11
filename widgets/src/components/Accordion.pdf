@@ -1,0 +1,53 @@
+import React from 'react';
+
+//otra forma con clases 
+// class Accordion extends Component{
+//   onTitleClick(){
+//     console.log('title was cliked');
+//   }
+//
+//   render(){
+//
+//   }
+// }
+
+const Accordion = ({items}) => {
+  const onTitleClick = (index)=>{
+    console.log('title clicked', index);
+  };
+  //tenemos los elementos, los tomamos de la lista y los presentamos como una lista con la funcion de mapeo
+  //para cada elemento devolvemos un poco de jsx con elementos de estilo
+  const renderedItems = items.map((item, index)=>{
+    //cada elemeto tiene que tener una clave y en este caso es el titulo
+    //solo queremos mostrar un fragmento de react por ello intercambiamos div por react.fragment para que no haya un borde extra y haya que poner br en app
+    //para detectar los clic en los items un event handeler
+    //queremos hacer el segumiento de que indice se pulsa por ello hay que pasarlo commo argumento, es el segundo de la funcion map
+    // para verlo         onClick={()=>console.log('Tile clicked', index)}
+    //usamos una funcion auxiliar par no ponerlo todo ahi
+    //como no queremos ejecutar siempre la llamada a la funcion, no la ponemos entre {onTitleClick}
+    //usaremos el sistema de hoock para hacer el seguimiento de que elementos se expanden o contraen
+    /*primero mostraremos los indices*/
+    return (
+      <React.Fragment key ={item.title}>
+        <div className="title active" onClick={()=> onTitleClick(index)}>
+          <i className="dropdown icon"></i>
+          {item.title}
+        </div>
+        <div className="content active">
+          <p>{item.content}</p>
+        </div>
+      </React.Fragment>
+    );
+  });
+
+
+
+  return (
+    <div className="ui styled accordion">
+      {renderedItems}
+    </div>
+  );
+
+};
+
+export default Accordion;
